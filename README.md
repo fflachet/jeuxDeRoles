@@ -3,7 +3,7 @@ jeuxDeRoles
 
 A Symfony project created on February 9, 2017, 8:24 am.
 
-Author Loïc DERRIEUX  
+Author François FLACHET 
 ## Technos :
 * Symfony 3  
 * Jquery 3.1.1  
