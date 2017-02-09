@@ -16,3 +16,7 @@ Nous admettons que les technologies utilisés ne sont pas adaptées à ce genre 
 Nous avons deux jours pour réaliser le produit. Nous considerons donc les fonctionnalités en premier.  
 
 Si necessaire nous fournirons le cahier des charges via le lien sur le drive.
+
+## Informations complémentaires
+Importer le fichier sql suivant dans votre base de données :
+/sql/jeu_de_role.sql commit numero 0ee61cd3f826025740a538041fe1616fb72ae262
