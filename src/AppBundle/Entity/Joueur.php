@@ -30,9 +30,10 @@ class Joueur
 
     /**
      * @var \stdClass
-     * 
+     *
      * @ORM\OneToOne(targetEntity="Personnage")
-     * @ORM\JoinColumn(name="fk_personnage", referencedColumnName = "id", nullable= true)
+     * @ORM\JoinColumn(name="fk_personnage", referencedColumnName="id",nullable=true)
+     * 
      */
     private $personnage;
 
@@ -94,5 +95,6 @@ class Joueur
     {
         return $this->personnage;
     }
+    
 }
 

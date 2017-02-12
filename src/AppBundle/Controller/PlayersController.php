@@ -1,69 +1,111 @@
 <?php
 
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Joueur;
+use AppBundle\Entity\Personnage;
+use AppBundle\Form\PersonnageType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Description of playersController
- * 
- * @author ff
+ * Description of PlayersController
+ *
+ * @author loic
  */
 class PlayersController extends Controller {
 
     /**
      * Methode qui va ajouter les joueurs en base de données
-     * A la fin du traitement on est rediriger sur le controlleur
-     * afin de retourner la vue de creation de personnage
+     * A la fin du traitement on est rediriger sur le controlleur de vue
+     * afin de retourner la vue de creation de personnages
      * 
-     * Si le joueur existe en BD on le mets en session,
-     * sinon on l'enregistre et on le mets en session
-     * @Route("/players/add", name="addPlayers")
+     * Si le joueur existe en base de donnée, on le met en session
+     * sinon on l'enregistre, et on le met en session.
+     * @Route("/players/add",name="addPlayers")
      * @Method({"POST"})
      * @param \Request $r
      */
     public function addPlayers(Request $r) {
-        $em = $this->getDoctrine()->getManager();
-
+        $entityManager = $this->getDoctrine()->getManager();
         //boucle sur valeurs de 1 à 4
         for ($i = 1; $i <= 4; $i++) {
-            // stockage de la valeur dans la variable email
+            //stockage de la valeur dans la variabe email
             $email = $r->get('j' . strval($i));
-            //on va chercher l'email du user dans la DB
-            $checkEmail = $em->getRepository(Joueur::class)->findByEmail($email);
-
             if ($email != null) {
-
-                //si joueur existant
-                if ($checkEmail) {
-                    
-                    // on recupere la session correspondant a l'email
-                    $r->getSession()->set('j' . strval($i), $checkEmail);
-                    // on reroute sur la homepage
-                    return $this->redirectToRoute("createPerso");
-//                    return new Response($email." possede deja un compte");
+                $joueurs = $this->getDoctrine()->getRepository(Joueur::class)->findByEmail($email);
+                if ($joueurs != null) {
+                    $joueur = $joueurs[0];
+//                    return new Response($joueurs[0]->getEmail());
                 } else {
-                    // si nouveau joueur
-
+                    //si nouveau joueur
                     $joueur = new Joueur();
                     $joueur->setEmail($email);
-                    $em->persist($joueur);
-                    // mise en session du joueur
-                    $r->getSession()->set('j' . strval($i), $joueur);
-                    return $this->redirectToRoute("createPerso");
+                    $entityManager->persist($joueur);
                 }
+                //mise en session du joueur
+                $r->getSession()->set('j' . strval($i), $joueur); // 
             }
         }
+        $entityManager->flush();
+        $r->getSession()->set('actuel', 1);
+        return $this->redirectToRoute('createPerso');
+    }
+
+    /**
+     * @Route("/perso/create",name="savePersonnage")
+     * @param Request $r
+     */
+    public function savePersonnage(Request $r){
+        $em = $this->getDoctrine()->getManager();
+        $personnage = new Personnage();
+        $form = $this->createForm(PersonnageType::class, $personnage);
+        $form->handleRequest($r);
+        $em->persist($personnage->majStats());
+        $em->persist($personnage);
+        $this->mergeJoueur($personnage, $r, $em);
         $em->flush();
+        return $this->redirectToRoute("switch");
+    }
+    
+    /**
+     * Cette mehode nous permet de lier un joueur a un personnage
+     * 
+     * @param type $perso personnage a merger
+     * @param type $r Request
+     * @param type $em entity manager
+     * @return type 
+     */
+    public function mergeJoueur($perso, $r, $em) {
+        $joueur = $r->getSession()->get("j" . strval($r->getSession()->get('actuel')));
+        $joueur->setPersonnage($perso);
+        $em->merge($joueur);
+        return $em;
+    }
 
-
-//       //m'a permis de verifier les valeurs du formulaire
-//       return new Response($r->get('j1'));
+    /**
+     * Doit etre appelée par la validation de la création du personnage precendent !
+     * @param Request $r
+     * @return type
+     * @Route("/perso/switch",name="switch")
+     */
+    public function switchPlayer(Request $r) {
+        $next = $r->getSession()->get('actuel') + 1;
+        if ($r->getSession()->has('j' . strval($next))) {
+            $r->getSession()->set('actuel', $next);
+            return $this->redirectToRoute('createPerso');
+        }else{
+            return $this->redirectToRoute('game');
+        }
     }
 
 }

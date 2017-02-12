@@ -31,36 +31,40 @@ class Personnage {
     /**
      * @var \stdClass
      *
-     * @ORM\OneToOne(targetEntity="Stats")
-     * @ORM\JoinColumn(name="fk_stats", referencedColumnName ="id")
+     * @ORM\ManyToOne(targetEntity="Stats")
+     * @ORM\JoinColumn(name="fk_stats", referencedColumnName="id")
      */
     private $stats;
 
     /**
      * @var \stdClass
      *
-     * @ORM\OneToOne(targetEntity="Race")
-     * @ORM\JoinColumn(name="fk_race", referencedColumnName ="id")
+     * @ORM\ManyToOne(targetEntity="Race")
+     * @ORM\JoinColumn(name="fk_race", referencedColumnName="id")
      */
     private $race;
 
     /**
      * @var \stdClass
      *
-     * @ORM\OneToOne(targetEntity="Classe")
-     * @ORM\JoinColumn(name="fk_classe", referencedColumnName ="id")
+     * @ORM\ManyToOne(targetEntity="Classe")
+     * @ORM\JoinColumn(name="fk_classe", referencedColumnName="id")
      */
     private $classe;
 
     /**
      * @var int
-     * 
+     *
      * @ORM\Column(name="pa", type="integer")
      */
     private $pa;
 
+    
+    
     private $positionH;
+    
     private $positionV;
+    
     /**
      * Get id
      *
@@ -157,10 +161,10 @@ class Personnage {
     public function getClasse() {
         return $this->classe;
     }
-    
+
     /**
      * Get pa
-     * 
+     *
      * @return int
      */
     function getPa() {
@@ -169,9 +173,9 @@ class Personnage {
 
     /**
      * Set pa
-     * 
+     *
      * @param integer $pa
-     * 
+     *
      * @return Personnage
      */
     function setPa($pa) {
@@ -179,27 +183,43 @@ class Personnage {
         return $this;
     }
 
+    
     /**
      * Attaque le personnage ciblé en parametre
      * 
      * @param \AppBundle\Entity\Personnage $cible
      */
-    public function attaquer(Personnage $cible) {
+    public function attaquer(Personnage $cible){
         
     }
-    
     /**
      * Changer sa position initiale par les nouvelles coordonnées
      * 
      * @param int $ligne
      * @param int $colonne
      */
-    public function seDeplacer(int $ligne, int$colonne) {
+    public function seDeplacer(int $ligne, int $colonne){
         $this->positionH = $ligne;
         $this->positionV = $colonne;
     }
     
-    public function paul() {
-        var_dump("Bravo ! vous etes paul. ");
+    /**
+     * Methode pour mourir
+     */
+    public function paul(){
+        var_dump("bravo ! vous etes paul.");
     }
+    function __construct() {
+        $this->pa = 2;
+    }
+
+    public function majStats(){
+        $this->stats = new Stats();
+        $this->stats->setPv($this->race->getStats()->getPv() + $this->classe->getStats()->getPv());
+        $this->stats->setAtt($this->race->getStats()->getAtt() + $this->classe->getStats()->getAtt());
+        $this->stats->setMov($this->race->getStats()->getMov() + $this->classe->getStats()->getMov());
+        $this->stats->setDef($this->race->getStats()->getDef() + $this->classe->getStats()->getDef());
+        return $this->stats;
+    }
+    
 }

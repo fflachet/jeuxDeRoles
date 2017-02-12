@@ -24,7 +24,7 @@ class Classe
     /**
      * @var string
      *
-     * @ORM\Column(name="nom", type="string", length=255)
+     * @ORM\Column(name="nom", type="string", length=255, unique=true)
      */
     private $nom;
 
@@ -32,7 +32,7 @@ class Classe
      * @var \stdClass
      *
      * @ORM\OneToOne(targetEntity="Stats")
-     * @ORM\JoinColumn(name="fk_stats", referencedColumnName ="id")
+     * @ORM\JoinColumn(name="fk_stats", referencedColumnName="id")
      */
     private $stats;
 
@@ -94,5 +94,10 @@ class Classe
     {
         return $this->stats;
     }
+    
+    public function __toString() {
+        return $this->nom;
+    }
+
 }
 

@@ -32,7 +32,7 @@ class Race
      * @var \stdClass
      *
      * @ORM\OneToOne(targetEntity="Stats")
-     * @ORM\JoinColumn(name="fk_stats", referencedColumnName ="id")
+     * @ORM\JoinColumn(name="fk_stats", referencedColumnName="id")
      */
     private $stats;
 
@@ -94,5 +94,10 @@ class Race
     {
         return $this->stats;
     }
+    
+    public function __toString() {
+        return $this->nom;
+    }
+
 }
 

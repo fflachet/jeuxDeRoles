@@ -1,6 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    creation personnage
+    <div class="form">
+        {{ joueur.email }}
+        {{ form_start(formulaire,{'attr':{'action':path("savePersonnage")}}) }}
+        {{ form_widget(formulaire) }}
+        <input type="submit" value="creer" />
+    {{ form_end(formulaire) }}
+    </div>
 {% endblock %}
-
